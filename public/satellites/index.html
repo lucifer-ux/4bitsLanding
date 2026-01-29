@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Satellites Globe</title>
+  <style>
+    html, body { height: 100%; margin: 0; background: transparent; }
+    #globe { position: fixed; inset: 0; }
+    /* No footer/time UI here by design */
+  </style>
+  <script src="https://unpkg.com/three@0.150.1/build/three.min.js"></script>
+  <script src="https://unpkg.com/globe.gl"></script>
+  <script src="https://unpkg.com/satellite.js/dist/satellite.min.js"></script>
+</head>
+<body>
+  <div id="globe"></div>
+  <div id="sat-loader">
+    <div class="loader-card">
+      <div class="loader-text">Making delay desirable<span class="dots"></span></div>
+    </div>
+  </div>
+  <script>
+    // Initialize globe
+    const globe = Globe()
+      (document.getElementById('globe'))
+      .backgroundColor('rgba(0,0,0,0)')
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+      .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png');
+
+    // TLEs: start with a small sample so satellites render immediately,
+    // then replace with full active set once fetched.
+    const SAMPLE_TLES = [
+      { id: 'ISS', tle1: '1 25544U 98067A   20334.91667824  .00001264  00000-0  29621-4 0  9993', tle2: '2 25544  51.6433  39.5237 0002285  99.1704  52.6734 15.49212987255212' },
+      { id: 'SAT-1', tle1: '1 40374U 15007A   20335.13630844  .00000021  00000-0  00000+0 0  9993', tle2: '2 40374  98.7355  31.1071 0012400  96.1673 264.0592 14.19587527301157' },
+      { id: 'SAT-2', tle1: '1 43013U 17073A   20334.89489250  .00000076  00000-0  00000+0 0  9998', tle2: '2 43013  97.4142  61.1209 0012647 171.9285 188.2211 15.18614973202057' }
+    ];
+    let tleList = SAMPLE_TLES.slice();
+    async function loadTLEs() {
+      try {
+        const resp = await fetch('https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle');
+        if (!resp.ok) {
+          throw new Error(`HTTP error! status: ${resp.status}`);
+        }
+        const txt = await resp.text();
+        const lines = txt.split(/\r?\n/).filter(Boolean);
+        const list = [];
+        for (let i = 0; i < lines.length - 2; i += 3) {
+          const name = lines[i].trim();
+          const tle1 = lines[i + 1].trim();
+          const tle2 = lines[i + 2].trim();
+          list.push({ id: name, tle1, tle2 });
+          if (list.length > 800) break; // cap for performance
+        }
+        if (list.length) {
+          tleList = list;
+          return;
+        }
+        throw new Error('Empty TLE list');
+      } catch (e) {
+        console.warn('Failed to load satellite data (CORS or network issue):', e.message);
+        // Keep SAMPLE_TLES
+      }
+    }
+
+    let satObjects = [];
+    const SAMPLE_COUNT = SAMPLE_TLES.length;
+    const LOADER_MIN_MS = 900; // keep loader for at least this long
+    const loaderStart = Date.now();
+    let loaderDone = false;
+
+    function hideLoaderNow() {
+      if (loaderDone) return;
+      const el = document.getElementById('sat-loader');
+      if (!el) return;
+      const elapsed = Date.now() - loaderStart;
+      const wait = Math.max(0, LOADER_MIN_MS - elapsed);
+      loaderDone = true;
+      setTimeout(() => {
+        el.style.opacity = '0';
+        setTimeout(() => { el.style.display = 'none'; }, 350);
+      }, wait);
+    }
+    function updatePositions() {
+      const now = new Date();
+      const gmst = satellite.gstime(now);
+      const updated = [];
+      for (const s of tleList) {
+        const rec = satellite.twoline2satrec(s.tle1, s.tle2);
+        const posVel = satellite.propagate(rec, now);
+        if (!posVel || !posVel.position) continue;
+        const gd = satellite.eciToGeodetic(posVel.position, gmst);
+        const lat = satellite.degreesLat(gd.latitude);
+        const lng = satellite.degreesLong(gd.longitude);
+        const alt = Math.max(0.03, gd.height / 6371); // altitude in Earth radii
+        updated.push({ id: s.id, lat, lng, alt });
+      }
+      satObjects = updated;
+      // Render as small objects (spheres), matching satellites example look
+      const THREE = window.THREE;
+      const makeDot = () => new THREE.Mesh(
+        new THREE.SphereGeometry(0.25, 6, 6),
+        new THREE.MeshBasicMaterial({ color: 0x88ffcc })
+      );
+
+      globe
+        .objectsData(satObjects)
+        .objectLabel(d => d.id)
+        .objectLat(d => d.lat)
+        .objectLng(d => d.lng)
+        .objectAltitude(d => d.alt)
+        .objectThreeObject(() => makeDot());
+
+      // Hide loader only after minimum time and meaningful satellite data
+      const enoughData = (tleList.length > SAMPLE_COUNT) ? satObjects.length > 50 : satObjects.length > 0;
+      if (enoughData) hideLoaderNow();
+    }
+
+    (async function init() {
+      // Render immediately with sample
+      updatePositions();
+      // Fetch full TLEs in the background, then swap in
+      loadTLEs().then(() => updatePositions());
+      setInterval(updatePositions, 1000);
+      // Camera POV adaptive: zoom out more on small screens so globe fits fully
+      const small = window.innerWidth < 640 || window.innerHeight < 640;
+      globe.pointOfView({ lat: 0, lng: 0, altitude: small ? 3.2 : 2.2 });
+
+      // Controls bounds to keep full globe in view on mobile
+      const dMin = small ? 140 : 80;
+      const dMax = small ? 1200 : 900;
+      const controls = globe.controls();
+      controls.minDistance = dMin;
+      controls.maxDistance = dMax;
+      controls.zoomSpeed = small ? 0.25 : 0.35;
+
+      // Loader starts visible by default and hides when satellites appear,
+      // plus a safety timeout in case of network issues
+      setTimeout(() => hideLoaderNow(), 8000);
+    })();
+
+    // Controls
+    controls.enableZoom = false; // disable globe wheel/trackpad zoom so scrolling drives page/parallax
+    controls.enablePan = false;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.6;
+
+    // Smooth rotation system
+    let isManualRotation = false;
+    let manualRotationTimeout = null;
+    let targetRotation = { lat: 0, lng: 0 };
+    let currentRotation = { lat: 0, lng: 0 };
+    
+    // Smooth rotation animation loop
+    function smoothRotate() {
+      if (isManualRotation) {
+        // Smooth interpolation towards target
+        const lerpFactor = 0.15; // Smooth interpolation factor
+        currentRotation.lat += (targetRotation.lat - currentRotation.lat) * lerpFactor;
+        currentRotation.lng += (targetRotation.lng - currentRotation.lng) * lerpFactor;
+        
+        // Apply rotation to globe with smooth transition
+        globe.pointOfView({
+          lat: currentRotation.lat,
+          lng: currentRotation.lng,
+          altitude: globe.pointOfView().altitude
+        }, 0); // No transition delay for immediate response
+      }
+      requestAnimationFrame(smoothRotate);
+    }
+    
+    // Start smooth rotation loop
+    smoothRotate();
+    
+    // Listen for rotation messages from parent
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'GLOBE_ROTATION') {
+        const { rotation } = event.data;
+        
+        // Enable manual rotation mode
+        isManualRotation = true;
+        controls.autoRotate = false;
+        
+        // Update target rotation immediately
+        targetRotation = {
+          lat: rotation.lat,
+          lng: rotation.lng
+        };
+        
+        // Clear existing timeout
+        if (manualRotationTimeout) {
+          clearTimeout(manualRotationTimeout);
+        }
+        
+        // Re-enable auto-rotate after interaction ends
+        manualRotationTimeout = setTimeout(() => {
+          isManualRotation = false;
+          controls.autoRotate = true;
+        }, 1000);
+      }
+    });
+  </script>
+  <style>
+    #sat-loader {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.85) 100%);
+      color: #ffffff;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      z-index: 99;
+      transition: opacity 300ms ease;
+    }
+    .loader-card {
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 6px 28px rgba(0,0,0,0.4);
+      backdrop-filter: blur(6px);
+    }
+    .loader-text { font-weight: 700; letter-spacing: 0.2px; }
+    .dots::after {
+      content: '';
+      animation: ellipsis 1.4s infinite steps(4);
+      display: inline-block;
+      width: 1.5ch;
+      overflow: hidden;
+      vertical-align: bottom;
+    }
+    @keyframes ellipsis {
+      0% { content: ''; }
+      25% { content: '.'; }
+      50% { content: '..'; }
+      75% { content: '...'; }
+      100% { content: ''; }
+    }
+  </style>
+</body>
+</html>
+

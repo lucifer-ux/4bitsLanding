@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Payment Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Payment Status</h1>
+        
+        <button onclick="checkUserStatus()">Check User Status</button>
+        <button onclick="markAsPaid()">Mark User as Paid</button>
+        <button onclick="markAsUnpaid()">Mark User as Unpaid</button>
+        <button onclick="checkAllUsers()">Check All Users</button>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://cfhctisnzsferowzoxsp.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmaGN0aXNuenNmZXJvd3pveHNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE5NzQ4MzEsImV4cCI6MjA0NzU1MDgzMX0.xb70W9lvVSol3micD8jqdKLG5OVXxL2uhY4Qb4NVBg4';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        function showResult(message, isError = false) {
+            const result = document.getElementById('result');
+            result.style.display = 'block';
+            result.className = `result ${isError ? 'error' : 'success'}`;
+            result.textContent = message;
+        }
+        
+        async function checkUserStatus() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (!session?.user) {
+                    showResult('No user logged in', true);
+                    return;
+                }
+                
+                console.log('Current user:', session.user);
+                
+                // Check if user exists in our database
+                const { data: dbUser, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('auth_user_id', session.user.id)
+                    .single();
+                
+                if (error) {
+                    showResult(`Error getting user: ${error.message}`, true);
+                    return;
+                }
+                
+                if (!dbUser) {
+                    showResult('User not found in database', true);
+                    return;
+                }
+                
+                showResult(`User found: ${dbUser.name} (${dbUser.email}) - Paid: ${dbUser.paid}`);
+                
+            } catch (error) {
+                showResult(`Error: ${error.message}`, true);
+            }
+        }
+        
+        async function markAsPaid() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (!session?.user) {
+                    showResult('No user logged in', true);
+                    return;
+                }
+                
+                const { error } = await supabase
+                    .from('users')
+                    .update({ paid: true, updated_at: new Date().toISOString() })
+                    .eq('auth_user_id', session.user.id);
+                
+                if (error) {
+                    showResult(`Error marking as paid: ${error.message}`, true);
+                    return;
+                }
+                
+                showResult('User marked as paid successfully!');
+                
+            } catch (error) {
+                showResult(`Error: ${error.message}`, true);
+            }
+        }
+        
+        async function markAsUnpaid() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (!session?.user) {
+                    showResult('No user logged in', true);
+                    return;
+                }
+                
+                const { error } = await supabase
+                    .from('users')
+                    .update({ paid: false, updated_at: new Date().toISOString() })
+                    .eq('auth_user_id', session.user.id);
+                
+                if (error) {
+                    showResult(`Error marking as unpaid: ${error.message}`, true);
+                    return;
+                }
+                
+                showResult('User marked as unpaid successfully!');
+                
+            } catch (error) {
+                showResult(`Error: ${error.message}`, true);
+            }
+        }
+        
+        async function checkAllUsers() {
+            try {
+                const { data: users, error } = await supabase
+                    .from('users')
+                    .select('*');
+                
+                if (error) {
+                    showResult(`Error getting users: ${error.message}`, true);
+                    return;
+                }
+                
+                if (!users || users.length === 0) {
+                    showResult('No users found in database');
+                    return;
+                }
+                
+                const userList = users.map(user => 
+                    `${user.name} (${user.email}) - Paid: ${user.paid}`
+                ).join('\n');
+                
+                showResult(`All users:\n${userList}`);
+                
+            } catch (error) {
+                showResult(`Error: ${error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>
