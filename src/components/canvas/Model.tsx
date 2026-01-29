@@ -3,6 +3,7 @@ import { STLLoader } from 'three-stdlib'
 import { forwardRef, useLayoutEffect } from 'react'
 import * as THREE from 'three'
 import { Center } from '@react-three/drei'
+import modelUrl from "@/assets/4bits3D_small.stl"
 
 // Custom type combining Mesh props and custom color prop
 type ModelProps = ThreeElements['mesh'] & {
@@ -11,18 +12,18 @@ type ModelProps = ThreeElements['mesh'] & {
 
 export const Model = forwardRef<THREE.Mesh, ModelProps>(({ modelColor = "#1a1a1a", ...props }, ref) => {
     // Cast the loader result to BufferGeometry because TS might infer it loosely
-    const geometry = useLoader(STLLoader, '/4bits3D_small.stl') as THREE.BufferGeometry
+    debugger;
+    const geometry = useLoader(STLLoader, modelUrl) as THREE.BufferGeometry
 
     useLayoutEffect(() => {
         if (geometry) {
             geometry.computeVertexNormals()
-            geometry.center()
         }
     }, [geometry])
 
     return (
         <Center>
-            <mesh ref={ref} geometry={geometry} castShadow receiveShadow {...props}>
+            <mesh ref={ref} geometry={geometry} scale={0.01} position={[0, 0, 0]} castShadow receiveShadow {...props}>
                 <meshStandardMaterial
                     color={modelColor}
                     roughness={0.4}

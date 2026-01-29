@@ -19,7 +19,7 @@ export function Scene({ isInteracting, setInteraction, modelColor }: { isInterac
             shadows
             dpr={[1, 1.5]}
             gl={{ antialias: true, alpha: true }}
-            camera={{ position: [0, 0, 15], fov: 35 }}
+            camera={{ position: [0, 0, 3], fov: 50 }}
             eventSource={document.body}
             style={{
                 position: 'fixed',
