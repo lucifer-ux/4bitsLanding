@@ -233,7 +233,7 @@ html, body {
 button {
   border: none;
   background: none;
-  cursor: pointer;
+  /* cursor: pointer; */
   font-family: "Ubuntu", sans-serif;
 }
 

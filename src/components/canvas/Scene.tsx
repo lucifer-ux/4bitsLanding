@@ -7,7 +7,7 @@ import { Experience } from './Experience'
 function Loader() {
     const { progress } = useProgress()
     return (
-        <Html center className="text-white font-mono text-sm">
+        <Html center className="text-white font-mono text-base">
             {progress.toFixed(0)}%
         </Html>
     )

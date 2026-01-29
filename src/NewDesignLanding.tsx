@@ -4,6 +4,7 @@ import { ReactLenis } from 'lenis/react'
 import { Scene } from './components/canvas/Scene';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import bitsLogo from "@/assets/white_logo.png"
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -32,7 +33,7 @@ function CTAButton({ text, variant = 'primary' }: { text: string; variant?: 'pri
 
     return (
         <motion.button
-            className="relative px-8 py-3.5 rounded-full font-medium text-sm tracking-wide cursor-pointer pointer-events-auto"
+            className="relative px-8 py-3.5 rounded-full font-medium text-base tracking-wide cursor-pointer pointer-events-auto"
             style={{
                 background: isPrimary ? '#fff' : 'transparent',
                 color: isPrimary ? '#000' : colors.textPrimary,
@@ -87,14 +88,14 @@ function FeatureItem({
 
             <div>
                 <h4
-                    className="text-base font-medium mb-2 transition-colors duration-200"
+                    className="text-3xl font-medium mb-2 transition-colors duration-200"
                     style={{ color: isHovered ? colors.textPrimary : colors.textSecondary }}
                 >
                     {title}
                 </h4>
                 <p
-                    className="text-sm leading-relaxed max-w-sm"
-                    style={{ color: colors.textMuted }}
+                    className="text-base leading-relaxed max-w-sm"
+                    style={{ color: "#f3dddd" }}
                 >
                     {description}
                 </p>
@@ -135,38 +136,29 @@ function Footer() {
         >
             <div className="max-w-5xl mx-auto">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
-                    <img src="/4bits_without_bg.png" alt="4bits" className="h-10" />
-                    <div className="flex gap-8">
-                        {['About', 'Technology', 'Support'].map(link => (
-                            <a
-                                key={link}
-                                href="#"
-                                className="text-sm transition-colors hover:text-white cursor-pointer"
-                                style={{ color: colors.textMuted }}
-                            >
-                                {link}
-                            </a>
-                        ))}
-                    </div>
-                </div>
-
-                <div
+                    <img src={bitsLogo} alt="4bits" className="h-40 w-40" />
+                    
+                     <div
                     className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs"
                     style={{
-                        borderTop: `1px solid ${colors.border}`,
+                        
                         color: colors.textMuted,
                     }}
                 >
-                    <p>© 2024 4bits</p>
+                   
                     <div className="flex gap-6">
-                        <a href="/4bits Terms and Conditions.pdf" target="_blank" className="hover:text-white transition-colors cursor-pointer">
+                        <a href="/4bits Terms and Conditions.pdf" target="_blank" className="hover:text-white text-2xl transition-colors cursor-pointer select-none">
                             Terms
                         </a>
-                        <a href="/4bits Privacy Policy.pdf" target="_blank" className="hover:text-white transition-colors cursor-pointer">
+                        <a href="/4bits Privacy Policy.pdf" target="_blank" className="hover:text-white text-2xl transition-colors cursor-pointer select-none">
                             Privacy
                         </a>
                     </div>
+                     <p className='text-base'>© 2025 4bits</p>
                 </div>
+                </div>
+
+               
             </div>
         </footer>
     );
@@ -184,7 +176,7 @@ const productColors = [
 export default function NewDesignLanding() {
     const [scrollProgress, setScrollProgress] = useState(0)
     const [isInteracting, setIsInteracting] = useState(false) // Lifted state for pointer-events
-    const [modelColor, setModelColor] = useState(productColors[0].value) // Color state
+    const modelColor = productColors[0].value // Color state
     const lenisRef = useRef<any>(null)
 
     useEffect(() => {
@@ -236,10 +228,10 @@ export default function NewDesignLanding() {
         style.id = 'newdesign-page-overrides';
         style.textContent = `
             /* Restore native cursor */
-            body, html, *, *::before, *::after {
-                cursor: auto !important;
-            }
-            
+            body {
+                cursor: default;
+                }
+
             /* Kill the star background effectively */
             #root::before {
                 content: none !important;
@@ -314,7 +306,7 @@ export default function NewDesignLanding() {
             <Scene isInteracting={isInteracting} setInteraction={setIsInteracting} modelColor={modelColor} />
 
             <div
-                className={`min-h-screen relative w-full ${isInteracting ? 'select-none cursor-grab active:cursor-grabbing' : ''}`}
+                className={`min-h-screen relative w-full ${isInteracting ? 'select-none' : ''}`}
                 style={{
                     background: '#000000', // Keep background black
                     fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
@@ -364,7 +356,7 @@ export default function NewDesignLanding() {
                             </h1>
 
                             <p
-                                className="text-base sm:text-lg mb-8 max-w-md mx-auto"
+                                className="text-3xl sm:text-lg mb-8 max-w-md mx-auto"
                                 style={{ color: colors.textSecondary }}
                             >
                                 The personal storage assistant that understands you.
@@ -447,7 +439,7 @@ export default function NewDesignLanding() {
                                 whileInView={{ opacity: 1 }}
                                 viewport={{ once: true }}
                             >
-                                Specifications
+                                Powers
                             </motion.p>
 
                             <div
@@ -457,10 +449,10 @@ export default function NewDesignLanding() {
                                     border: `1px solid ${colors.border}`,
                                 }}
                             >
-                                <SpecItem label="Storage" value="2TB" />
-                                <SpecItem label="Speed" value="540MB/s" />
-                                <SpecItem label="WiFi" value="WiFi 6" />
-                                <SpecItem label="Encryption" value="AES-256" isLast />
+                                <SpecItem label="Auto Syncs" value="Cloud full?" />
+                                <SpecItem label="4bits will search" value="Forgot image?" />
+                                <SpecItem label="Access from anywhere" value="Dont carry" />
+                                <SpecItem label="Sll files encrypted" value="Data security?" isLast />
                             </div>
                         </div>
                     </section>
@@ -487,7 +479,7 @@ export default function NewDesignLanding() {
                                     <span style={{ color: colors.textSecondary }}>not in the cloud.</span>
                                 </h2>
                                 <p
-                                    className="text-base sm:text-lg max-w-xl mx-auto mb-12"
+                                    className="text-3xl sm:text-lg max-w-xl mx-auto mb-12"
                                     style={{ color: colors.textMuted }}
                                 >
                                     Intelligent local storage that organizes, searches, and manages your digital life—autonomously and privately.
@@ -531,7 +523,7 @@ export default function NewDesignLanding() {
                                     Ready to own your data?
                                 </h2>
                                 <p
-                                    className="text-base mb-8"
+                                    className="text-3xl mb-8"
                                     style={{ color: colors.textMuted }}
                                 >
                                     Join the waitlist for early access.
@@ -544,78 +536,12 @@ export default function NewDesignLanding() {
                         </div>
                     </section>
 
-                    {/* ==================== 3D PLAYGROUND SECTION ==================== */}
-                    <section id="section-playground" className="relative h-screen flex flex-col items-center justify-center pointer-events-none select-none">
-
-                        {/* Interaction Hint */}
-                        <motion.div
-                            className="absolute bottom-12 pointer-events-auto"
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            transition={{ delay: 0.5 }}
-                        >
-                            <div
-                                className="flex items-center gap-3 px-4 py-2 rounded-full backdrop-blur-md"
-                                style={{
-                                    background: 'rgba(255,255,255,0.05)',
-                                    border: `1px solid ${colors.border}`
-                                }}
-                            >
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-xs uppercase tracking-widest" style={{ color: colors.textSecondary }}>
-                                    Drag to Rotate
-                                </span>
-                            </div>
-                        </motion.div>
-
-                        {/* Color Picker Sidebar - Right aligned */}
-                        <motion.div
-                            className="absolute right-8 top-1/2 -translate-y-1/2 p-4 rounded-2xl backdrop-blur-md pointer-events-auto"
-                            style={{
-                                background: 'rgba(20, 20, 20, 0.6)',
-                                border: `1px solid ${colors.border}`
-                            }}
-                            initial={{ x: 50, opacity: 0 }}
-                            whileInView={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 0.2 }}
-                        >
-                            <div className="flex flex-col gap-4">
-                                {productColors.map((color) => (
-                                    <div
-                                        key={color.value}
-                                        className="group relative flex items-center"
-                                    >
-                                        <button
-                                            onClick={() => setModelColor(color.value)}
-                                            className="w-10 h-10 rounded-full border-2 transition-all duration-300 hover:scale-110"
-                                            style={{
-                                                backgroundColor: color.value,
-                                                borderColor: modelColor === color.value ? '#fff' : 'transparent',
-                                                boxShadow: modelColor === color.value ? `0 0 15px ${color.value}80` : 'none'
-                                            }}
-                                            aria-label={`Select ${color.name}`}
-                                        />
-                                        <span
-                                            className="absolute right-14 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none"
-                                            style={{ border: `1px solid ${colors.border}` }}
-                                        >
-                                            {color.name}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.div>
-
-                    </section>
 
                     {/* ==================== FOOTER ==================== */}
                     <Footer />
 
                     {/* Progress Line - Visual Track */}
-                    <div
-                        className="fixed right-12 top-[15vh] bottom-[15vh] w-[1px] z-40 pointer-events-none mix-blend-difference"
-                        style={{ background: 'rgba(255,255,255,0.1)' }}
-                    />
+                   
 
                     {/* Persistent Traveling Pre-order Button */}
                     <motion.div

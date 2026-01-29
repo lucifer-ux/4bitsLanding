@@ -47,7 +47,7 @@ export function Experience({ isInteracting, setInteraction, modelColor }: { isIn
         mesh.scale.set(0.08, 0.08, 0.08) // Further reduced (was 0.15)
 
         // Color definitions for animations
-        const colorSpecs = new THREE.Color("#4f46e5")
+        const colorSpecs = new THREE.Color("#ffffffff")
         const emissiveSpecs = new THREE.Color("#222222")
         const colorPhil = new THREE.Color("#1a1a1a")
         const emissivePhil = new THREE.Color("#000000")
@@ -92,9 +92,9 @@ export function Experience({ isInteracting, setInteraction, modelColor }: { isIn
                 .to(mesh.rotation, { y: Math.PI * 3, duration: 1.5 }, "<")
 
             // 5. CTA -> Playground (90-100%)
-            tl.to(mesh.scale, { x: 0.05, y: 0.05, z: 0.05, duration: 1, ease: "power2.out" })
-                .to(mesh.rotation, { x: Math.PI / 2, y: 0, z: Math.PI / 2, duration: 1, ease: "power2.out" }, "<")
-                .to(group.position, { x: 0, y: 0, z: 0, duration: 1 }, "<")
+            tl.to(group.position, { x: 1, y: -0.2, z: 0, ease: "power1.inOut", duration: 2 })
+                .to(mesh.rotation, { x: 0.1, y: Math.PI * 0.5, z: 0, duration: 2 }, "<")
+
 
             // Interaction toggle logic needs separate triggers since it's state-based, not tween-based
             ScrollTrigger.create({

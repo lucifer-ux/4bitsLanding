@@ -9,7 +9,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  assetsInclude: ["**/*.stl"], 
+  assetsInclude: ["**/*.stl", "**/*.exr", "**/*.png"], 
   plugins: [react()],
   server: {
     port: 5000,
