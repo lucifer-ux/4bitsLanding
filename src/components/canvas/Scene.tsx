@@ -20,21 +20,27 @@ function Loader() {
 }
 
 export function Scene({ isInteracting, setInteraction, modelColor }: { isInteracting: boolean, setInteraction: (v: boolean) => void, modelColor: string }) {
+    const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
+    
     return (
         <Canvas
             shadows
             dpr={[1, 1.5]}
             gl={{ antialias: true, alpha: true }}
             camera={{ position: [0, 0, 3], fov: 50 }}
-            eventSource={document.body}
             style={{
                 position: 'fixed',
                 top: 0,
                 left: 0,
                 width: '100vw',
                 height: '100vh',
-                pointerEvents: isInteracting ? 'auto' : 'none', // Toggle based on state
-                zIndex: 1, // Behind text but visible
+                zIndex: 1,
+                
+                // ✅ KEY FIX: Always none on mobile, conditional on desktop
+                pointerEvents: isMobile ? 'none' : (isInteracting ? 'auto' : 'none'),
+                
+                // ✅ Allow vertical scroll on touch devices
+                touchAction: 'pan-y',
             }}
         >
             <Suspense fallback={<Loader />}>

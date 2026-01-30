@@ -12,6 +12,7 @@ export function Experience({ isInteracting, setInteraction, modelColor }: { isIn
     const meshRef = useRef<THREE.Mesh>(null)
     const groupRef = useRef<THREE.Group>(null)
     const floatRef = useRef<THREE.Group>(null)
+    const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
     const { camera } = useThree()
 
     // Mouse Parallax Logic
@@ -116,10 +117,10 @@ export function Experience({ isInteracting, setInteraction, modelColor }: { isIn
             <OrbitControls
                 enableZoom={false}
                 enablePan={false}
-                enabled={isInteracting}
-                autoRotate={isInteracting}
+                enabled={!isMobile && isInteracting}
+                autoRotate={!isMobile && isInteracting}
                 autoRotateSpeed={2.0}
-            />
+                />
 
             {/*
               Layering Strategy:

@@ -175,8 +175,8 @@ const productColors = [
 // Main Component
 export default function NewDesignLanding() {
     const [scrollProgress, setScrollProgress] = useState(0)
-    const [isInteracting, setIsInteracting] = useState(false) // Lifted state for pointer-events
-    const modelColor = productColors[0].value // Color state
+    const [isInteracting, setIsInteracting] = useState(false)
+    const modelColor = productColors[0].value
     const lenisRef = useRef<any>(null)
 
     useEffect(() => {
@@ -187,7 +187,6 @@ export default function NewDesignLanding() {
         gsap.ticker.add(update)
 
         // Traveling CTA Animation
-        // Moves the button down the rail as user scrolls
         const ctaAnim = gsap.timeline({
             scrollTrigger: {
                 trigger: document.body,
@@ -202,7 +201,7 @@ export default function NewDesignLanding() {
                 ease: "none"
             })
 
-        // CTA Visibility (Fade in after Hero)
+        // CTA Visibility
         ScrollTrigger.create({
             trigger: document.body,
             start: "10% top",
@@ -221,74 +220,63 @@ export default function NewDesignLanding() {
         ScrollTrigger.update()
     }
 
-    // Clean up body styles
+    // Clean up body styles - CRITICAL FOR MOBILE SCROLL
     useEffect(() => {
-        // 1. Create style element to override global CSS
         const style = document.createElement('style');
         style.id = 'newdesign-page-overrides';
         style.textContent = `
             /* Restore native cursor */
             body {
-                cursor: default;
-                }
+                cursor: default !important;
+            }
 
-            /* Kill the star background effectively */
+            /* Kill the star background */
             #root::before {
                 content: none !important;
                 display: none !important;
-                opacity: 0 !important;
+            }
+
+            /* CRITICAL: Force scrollability on mobile */
+            html, body {
+                height: auto !important;
+                min-height: 100vh !important;
+                overflow-x: hidden !important;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+                overscroll-behavior-y: none !important;
             }
             
-            /* FORCE SCROLLABILITY - Override potential height: 100% locks */
-            html {
-                height: auto !important;
-                overflow: auto !important;
-                overflow-x: hidden !important;
-            }
-            body {
-                height: auto !important;
-                overflow: auto !important;
-                overflow-x: hidden !important;
-                background: #000000 !important;
-                position: relative !important; /* Ensure generic stacking works */
-            }
-            
-            /* Ensure root grows too */
             #root {
-                min-height: 100vh;
+                min-height: 100vh !important;
                 height: auto !important;
-                background: #000000 !important;
                 overflow: visible !important;
             }
             
-            /* Lenis specific */
+            /* Ensure Lenis doesn't lock scroll */
             html.lenis, html.lenis body {
                 height: auto !important;
+                overflow: visible !important;
+            }
+
+            /* Allow touch scrolling through canvas */
+            canvas {
+                touch-action: pan-y !important;
             }
         `;
         document.head.appendChild(style);
 
-        // 2. Direct style manipulation as backup
-        document.body.style.cursor = 'auto';
-        document.body.style.background = '#000000';
-        document.documentElement.style.background = '#000000';
-
-        // Critical: Unlock scroll
-        document.body.style.overflow = 'visible';
-        document.documentElement.style.overflow = 'visible';
+        // Direct manipulation
+        document.body.style.overflow = 'auto';
         document.body.style.height = 'auto';
+        document.documentElement.style.overflow = 'auto';
         document.documentElement.style.height = 'auto';
 
         return () => {
             const styleEl = document.getElementById('newdesign-page-overrides');
             if (styleEl) styleEl.remove();
-            // Cleanup styles
-            document.body.style.cursor = '';
-            document.body.style.background = '';
-            document.documentElement.style.background = '';
             document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
             document.body.style.height = '';
+            document.documentElement.style.overflow = '';
             document.documentElement.style.height = '';
         };
     }, []);
@@ -297,26 +285,34 @@ export default function NewDesignLanding() {
         <ReactLenis
             ref={lenisRef}
             root
-            options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}
+            options={{ 
+                lerp: 0.1, 
+                duration: 1.2, 
+                smoothWheel: true,
+                // CRITICAL: Disable smooth scroll on touch devices
+                touchMultiplier: 0,
+                infinite: false,
+            }}
             className="lenis lenis-smooth"
             onScroll={handleScroll}
         >
-            {/* 3D SCENE LAYER - Fixed relative to viewport, sibling to content */}
-            {/* Pass current interaction state and setter */}
+            {/* 3D SCENE LAYER */}
             <Scene isInteracting={isInteracting} setInteraction={setIsInteracting} modelColor={modelColor} />
 
             <div
                 className={`min-h-screen relative w-full ${isInteracting ? 'select-none' : ''}`}
                 style={{
-                    background: '#000000', // Keep background black
+                    background: '#000000',
                     fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
+                    // CRITICAL: Don't use pointer-events none on the main container
+                    pointerEvents: 'auto',
                 }}
             >
-                {/* CONTENT LAYER - Relative and transparent where needed */}
+                {/* CONTENT LAYER */}
                 <div className="relative z-10">
 
                     {/* ==================== HERO SECTION ==================== */}
-                    <section id="section-hero" className="relative min-h-screen flex flex-col items-center justify-end pb-24 px-6 pointer-events-none">
+                    <section id="section-hero" className="relative min-h-screen flex flex-col items-center justify-end pb-24 px-6 pointer-events-auto">
                         {/* Large background text */}
                         <div
                             className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden"
@@ -382,7 +378,7 @@ export default function NewDesignLanding() {
                     </section>
 
                     {/* ==================== FEATURES SECTION ==================== */}
-                    <section id="section-features" className="relative min-h-screen py-32 px-6 pointer-events-none">
+                    <section id="section-features" className="relative min-h-screen py-32 px-6 pointer-events-auto">
                         <div className="max-w-5xl mx-auto pointer-events-auto">
                             <motion.div
                                 className="mb-20"
@@ -430,7 +426,7 @@ export default function NewDesignLanding() {
                     </section>
 
                     {/* ==================== SPECS SECTION ==================== */}
-                    <section id="section-specs" className="relative py-24 px-6 pointer-events-none">
+                    <section id="section-specs" className="relative py-24 px-6 pointer-events-auto">
                         <div className="max-w-4xl mx-auto pointer-events-auto">
                             <motion.p
                                 className="text-xs uppercase tracking-[0.3em] mb-12 text-center"
@@ -458,7 +454,7 @@ export default function NewDesignLanding() {
                     </section>
 
                     {/* ==================== PHILOSOPHY SECTION ==================== */}
-                    <section id="section-philosophy" className="relative py-32 px-6 pointer-events-none">
+                    <section id="section-philosophy" className="relative py-32 px-6 pointer-events-auto">
                         <div className="max-w-3xl mx-auto text-center pointer-events-auto">
                             <motion.div
                                 initial={{ opacity: 0, y: 30 }}
@@ -509,7 +505,7 @@ export default function NewDesignLanding() {
                     </section>
 
                     {/* ==================== FINAL CTA ==================== */}
-                    <section id="section-cta" className="relative py-32 px-6 pointer-events-none">
+                    <section id="section-cta" className="relative py-32 px-6 pointer-events-auto">
                         <div className="max-w-2xl mx-auto text-center pointer-events-auto">
                             <motion.div
                                 initial={{ opacity: 0, y: 30 }}
@@ -540,15 +536,12 @@ export default function NewDesignLanding() {
                     {/* ==================== FOOTER ==================== */}
                     <Footer />
 
-                    {/* Progress Line - Visual Track */}
-                   
-
                     {/* Persistent Traveling Pre-order Button */}
                     <motion.div
                         id="floating-cta"
                         className="fixed right-8 z-50 mix-blend-difference"
                         initial={{ opacity: 0, y: 0 }}
-                        style={{ top: '15vh' }} // Start position
+                        style={{ top: '15vh' }}
                     >
                         <CTAButton text="Pre-order" />
                     </motion.div>
