@@ -1,5 +1,4 @@
 import { Environment } from '@react-three/drei'
-import hdrUrl from '@/assets/studio_small_09_1k.exr'
 
 export function Lights() {
     return (
@@ -13,7 +12,7 @@ export function Lights() {
                 castShadow
             />
             <pointLight position={[-10, -10, -10]} intensity={8} color="#4f46e5" />
-            <Environment files={hdrUrl} />
+            <Environment preset="city" background={false} />
         </>
     )
 }

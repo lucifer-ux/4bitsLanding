@@ -3,7 +3,7 @@ import { STLLoader } from 'three-stdlib'
 import { forwardRef, useLayoutEffect } from 'react'
 import * as THREE from 'three'
 import { Center } from '@react-three/drei'
-import modelUrl from "@/assets/small_3d.stl"
+import modelUrl from "@/assets/reduced.stl"
 
 // Custom type combining Mesh props and custom color prop
 type ModelProps = ThreeElements['mesh'] & {

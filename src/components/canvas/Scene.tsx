@@ -1,14 +1,20 @@
 import { Canvas } from '@react-three/fiber'
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Html, useProgress } from '@react-three/drei'
 import { Lights } from './Lights'
 import { Experience } from './Experience'
 
 function Loader() {
     const { progress } = useProgress()
+    const [value, setValue] = useState(0)
+
+    useEffect(() => {
+        setValue(progress)
+    }, [progress])
+
     return (
         <Html center className="text-white font-mono text-base">
-            {progress.toFixed(0)}%
+            {value.toFixed(0)}%
         </Html>
     )
 }
