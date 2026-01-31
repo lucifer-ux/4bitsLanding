@@ -48,7 +48,7 @@ export function Experience({ isInteracting, setInteraction, modelColor }: { isIn
         mesh.scale.set(0.08, 0.08, 0.08) // Further reduced (was 0.15)
 
         // Color definitions for animations
-        const colorSpecs = new THREE.Color("#ffffffff")
+        const colorSpecs = new THREE.Color("#222222")
         const emissiveSpecs = new THREE.Color("#222222")
         const colorPhil = new THREE.Color("#1a1a1a")
         const emissivePhil = new THREE.Color("#000000")

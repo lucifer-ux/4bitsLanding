@@ -11,7 +11,7 @@ export function Lights() {
                 intensity={15}
                 castShadow
             />
-            <pointLight position={[-10, -10, -10]} intensity={8} color="#4f46e5" />
+            <pointLight position={[-8, -11,-12]} intensity={8} color="#4f46e5" />
             <Environment preset="city" background={false} />
         </>
     )
