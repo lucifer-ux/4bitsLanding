@@ -1,0 +1,311 @@
+/* =========================
+   MODAL OVERLAY & BACKDROP
+========================= */
+
+.lead-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.92) !important;
+  backdrop-filter: blur(8px);
+  z-index: 99999 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+.lead-modal-inner {
+  z-index: 100000 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: none !important;
+}
+
+.lead-modal-content {
+  background: transparent !important;
+  box-shadow: none !important;
+  position: relative !important;
+  z-index: 100001 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+  width: auto !important;
+  max-width: 90vw !important;
+}
+
+.lead-modal-body {
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+}
+
+
+/* =========================
+   FORM CARD
+========================= */
+
+.lead-form {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 100002;
+  pointer-events: auto;
+
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 24px;
+  padding: 48px;
+
+  box-shadow: 
+    0 24px 80px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Close Button */
+.lead-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.lead-close-btn:hover {
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Icon Container */
+.lead-icon-container {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+.lead-lock-icon {
+  width: 28px;
+  height: 28px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Title & Subtitle */
+.lead-title {
+  color: white;
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.lead-subtitle {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+  margin: 0 0 32px 0;
+  font-weight: 400;
+}
+
+
+/* =========================
+   INPUTS
+========================= */
+
+.lead-inputs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.lead-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lead-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.lead-field-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
+  padding: 0;
+}
+
+.lead-input {
+  background: rgba(255, 255, 255, 0.03) !important;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: white !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  font-size: 15px !important;
+  font-weight: 400 !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.lead-input::placeholder {
+  color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.lead-input:hover {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.lead-input:focus {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.03) !important;
+  transform: translateY(-1px);
+}
+
+
+/* =========================
+   BUTTON
+========================= */
+
+.lead-button {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #000 !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  padding: 16px !important;
+  border-radius: 12px !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  border: none !important;
+  margin-bottom: 20px;
+}
+
+.lead-button:hover {
+  background: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.15) !important;
+}
+
+.lead-button:active {
+  transform: translateY(-1px);
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.lead-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lead-shield-icon {
+  width: 14px;
+  height: 14px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes iconFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 640px) {
+  .lead-form {
+    max-width: calc(100vw - 32px);
+    padding: 40px 32px;
+  }
+
+  .lead-title {
+    font-size: 24px;
+  }
+
+  .lead-subtitle {
+    font-size: 13px;
+  }
+
+  .lead-field-row {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .lead-input {
+    font-size: 16px !important;
+  }
+}

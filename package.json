@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@mantine/core": "^8.3.13",
+    "@mantine/form": "^8.3.13",
+    "@mantine/hooks": "^8.3.13",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
     "@types/d3-geo": "^3.1.0",

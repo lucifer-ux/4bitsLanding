@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { ReactLenis } from "lenis/react";
 import { Scene } from "./components/canvas/Scene";
+import { InputForm } from "./components/canvas/InputForm";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import bitsLogo from "@/assets/white_logo.png";
@@ -209,10 +210,21 @@ export default function NewDesignLanding() {
   const [isCalendlyVisible, setIsCalendlyVisible] = useState(false);
   const modelColor = productColors[0].value;
   const lenisRef = useRef<any>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [lead, setLead] = useState<{ email: string } | null>(null);
 
   const handleCtaButton = () => {
     setIsCalendlyVisible(true);
   };
+
+  const handleFormOpening = () => {
+    setIsFormOpen(true);
+  }
+
+  const handleFormSubmit = (values: { email: string }) => {
+    setLead(values);
+    setIsFormOpen(false);
+  }
 
   useEffect(() => {
     // Sync Lenis scroll with GSAP ScrollTrigger
@@ -319,6 +331,12 @@ export default function NewDesignLanding() {
   }, []);
 
   return (
+    <>
+    <InputForm
+        opened={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSubmit={handleFormSubmit}
+    />
     <ReactLenis
       ref={lenisRef}
       root
@@ -412,6 +430,14 @@ export default function NewDesignLanding() {
                   handleCtaButton={handleCtaButton}
                 />
               )}
+             <span style={{marginLeft: '20px'}}>
+                <CTAButton
+                  text="Pre-Order Now"
+                  handleCtaButton={handleFormOpening}
+                  variant="secondary"
+                />
+             </span>
+              
             </motion.div>
 
             {/* Scroll indicator */}
@@ -632,6 +658,13 @@ export default function NewDesignLanding() {
                       handleCtaButton={handleCtaButton}
                     />
                   )}
+                  <span style={{marginLeft: '20px'}}>
+                <CTAButton
+                  text="Pre-Order Now"
+                  handleCtaButton={handleFormOpening}
+                  variant="secondary"
+                />
+             </span>
                 </div>
               </motion.div>
             </div>
@@ -642,5 +675,7 @@ export default function NewDesignLanding() {
         </div>
       </div>
     </ReactLenis>
+          
+</>
   );
 }
