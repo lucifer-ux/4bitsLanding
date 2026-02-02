@@ -1,6 +1,6 @@
 {
     "$schema": "node_modules/wrangler/config-schema.json",
-    "name": "4bits-landing",
+    "name": "4bitslanding",
     "compatibility_date": "2024-04-03",
     "assets": {
         "directory": "./dist",
