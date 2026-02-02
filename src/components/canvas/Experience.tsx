@@ -8,7 +8,7 @@ import { Model } from './Model'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export function Experience({ isInteracting, setInteraction, modelColor }: { isInteracting: boolean, setInteraction: (v: boolean) => void, modelColor: string }) {
+export function Experience({ isInteracting, modelColor }: { isInteracting: boolean, modelColor: string }) {
     const meshRef = useRef<THREE.Mesh>(null)
     const groupRef = useRef<THREE.Group>(null)
     const floatRef = useRef<THREE.Group>(null)
@@ -97,14 +97,7 @@ export function Experience({ isInteracting, setInteraction, modelColor }: { isIn
                 .to(mesh.rotation, { x: 0.1, y: Math.PI * 0.5, z: 0, duration: 2 }, "<")
 
 
-            // Interaction toggle logic needs separate triggers since it's state-based, not tween-based
-            ScrollTrigger.create({
-                trigger: "#section-playground",
-                start: "top center",
-                end: "bottom bottom",
-                onEnter: () => setInteraction(true),
-                onLeaveBack: () => setInteraction(false)
-            })
+           
 
         })
 

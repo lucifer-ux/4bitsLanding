@@ -19,7 +19,7 @@ function Loader() {
     )
 }
 
-export function Scene({ isInteracting, setInteraction, modelColor }: { isInteracting: boolean, setInteraction: (v: boolean) => void, modelColor: string }) {
+export function Scene({ isInteracting, modelColor }: { isInteracting: boolean, modelColor: string }) {
     const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
     
     return (
@@ -45,7 +45,7 @@ export function Scene({ isInteracting, setInteraction, modelColor }: { isInterac
         >
             <Suspense fallback={<Loader />}>
                 <Lights />
-                <Experience setInteraction={setInteraction} isInteracting={isInteracting} modelColor={modelColor} />
+                <Experience isInteracting={isInteracting} modelColor={modelColor} />
             </Suspense>
         </Canvas>
     )
