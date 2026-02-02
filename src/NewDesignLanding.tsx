@@ -203,6 +203,8 @@ const productColors = [
   { name: "Crimson", value: "#9f1239" },
 ];
 
+export type LeadProps = 'existing' | 'new';
+
 // Main Component
 export default function NewDesignLanding() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -212,6 +214,7 @@ export default function NewDesignLanding() {
   const lenisRef = useRef<any>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [lead, setLead] = useState<{ email: string } | null>(null);
+  const [leadSuccess, setLeadSuccess] = useState<LeadProps | null>(null);
 
   const handleCtaButton = () => {
     setIsCalendlyVisible(true);
@@ -221,9 +224,27 @@ export default function NewDesignLanding() {
     setIsFormOpen(true);
   }
 
-  const handleFormSubmit = (values: { email: string }) => {
-    setLead(values);
-    setIsFormOpen(false);
+  const handleFormSubmit = async (values: { email: string }) => {
+    try {
+      const resp = await fetch('https://pengu1n-bot.peng1n.workers.dev/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      body: JSON.stringify(values),
+      } 
+    )
+    console.log(resp, "responsee");
+    if (resp.status === 200) setLeadSuccess('new');
+    else if (resp.status === 401) setLeadSuccess('existing');
+
+      setLead(values);
+      console.log("Lead submitted:", lead);
+    }
+    catch (e) {
+      console.error("Error submitting lead:", e);
+    }
+    
   }
 
   useEffect(() => {
@@ -336,6 +357,7 @@ export default function NewDesignLanding() {
         opened={isFormOpen}
         onClose={() => setIsFormOpen(false)}
         onSubmit={handleFormSubmit}
+        messageToDisplay={leadSuccess}
     />
     <ReactLenis
       ref={lenisRef}

@@ -2,21 +2,28 @@ import { Modal, TextInput, Button } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React from 'react';
 import '../InputForm.css';
+import { LeadProps } from '@/NewDesignLanding';
 
 type InputFormProps = {
   opened: boolean;
   onClose: () => void;
   onSubmit: (values: { email: string }) => void;
+  messageToDisplay: LeadProps | null;
 };
 
 export const InputForm: React.FC<InputFormProps> = ({
   opened,
   onClose,
   onSubmit,
+  messageToDisplay,
 }) => {
   const form = useForm({
     initialValues: { email: '' },
   });
+
+  const isError = messageToDisplay === 'existing';
+  const isSuccess = messageToDisplay === 'new';
+  const showMessage = isError || isSuccess;
 
   return (
     <Modal
@@ -74,12 +81,21 @@ export const InputForm: React.FC<InputFormProps> = ({
           <div className="lead-field-group">
             <label className="lead-field-label">IDENTITY (EMAIL)</label>
             <TextInput
-              classNames={{ input: "lead-input" }}
+              classNames={{ 
+                input: `lead-input ${isError ? 'lead-input-error' : ''} ${isSuccess ? 'lead-input-success' : ''}` 
+              }}
               placeholder="name@domain.com"
               type="email"
               required
+              disabled={isSuccess}
               {...form.getInputProps('email')}
             />
+            {showMessage && (
+              <div className={`lead-message ${isError ? 'lead-message-error' : 'lead-message-success'}`}>
+                {isError && 'Already registered'}
+                {isSuccess && 'Registered for pre-order'}
+              </div>
+            )}
           </div>
         </div>
 
@@ -87,6 +103,7 @@ export const InputForm: React.FC<InputFormProps> = ({
           fullWidth
           type="submit"
           className="lead-button"
+          disabled={isSuccess}
         >
           SECURE ACCESS
         </Button>
