@@ -585,7 +585,7 @@ export default function NewDesignLanding() {
                   </span>
                 </h2>
                 <p
-                  className="text-3xl sm:text-lg max-w-xl mx-auto mb-12"
+                  className="text-base sm:text-3xl max-w-xl mx-auto mb-12"
                   style={{ color: colors.textMuted }}
                 >
                   4bits was built for accumulation and continuity. It keeps
@@ -593,7 +593,7 @@ export default function NewDesignLanding() {
                   device
                 </p>
                 <p
-                  className="text-3xl sm:text-lg max-w-xl mx-auto mb-12"
+                  className="text-base sm:text-3xl max-w-xl mx-auto mb-12"
                   style={{ color: colors.textMuted }}
                 >
                   Storage stops being personal silos. It becomes a shared
@@ -640,7 +640,7 @@ export default function NewDesignLanding() {
                   See it in action.
                 </h2>
                 <p
-                  className="text-3xl mb-8"
+                  className="text-base sm:text-3xl max-w-xl mx-auto mb-12"
                   style={{ color: colors.textMuted }}
                 >
                   Book a demo and experience storage that remembers.
