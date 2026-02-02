@@ -463,28 +463,7 @@ export default function NewDesignLanding() {
             </motion.div>
 
             {/* Scroll indicator */}
-            <motion.div
-              className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-auto"
-              style={{ color: colors.textMuted }}
-              animate={{ y: [0, 6, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <div className="flex flex-col items-center">
-                <span className="text-[10px] mb-1.5 tracking-[0.2em] uppercase">
-                  Scroll
-                </span>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path d="M7 10l5 5 5-5" />
-                </svg>
-              </div>
-            </motion.div>
+           
           </section>
 
           {/* ==================== FEATURES SECTION ==================== */}
@@ -517,7 +496,7 @@ export default function NewDesignLanding() {
                 <FeatureItem
                   number={1}
                   title="Search without perfect recall"
-                  description="Find files by what you remember, not what you named them. That contract from the Berlin client” just works."
+                  description="Find files by what you remember, not what you named them. That contract from the Berlin client just works."
                 />
                 <FeatureItem
                   number={2}
