@@ -1,27 +1,42 @@
 import { Canvas } from '@react-three/fiber'
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import { Html, useProgress } from '@react-three/drei'
+import { motion } from 'framer-motion'
 import { Lights } from './Lights'
 import { Experience } from './Experience'
 
 function Loader() {
-    const { progress } = useProgress()
-    const [value, setValue] = useState(0)
-
-    useEffect(() => {
-        setValue(progress)
-    }, [progress])
-
-    return (
-        <Html center className="text-white font-mono text-base">
-            {value.toFixed(0)}%
-        </Html>
-    )
+    return null
 }
 
-export function Scene({ isInteracting, modelColor }: { isInteracting: boolean, modelColor: string }) {
+function ProgressReporter({ onLoaded }: { onLoaded?: () => void }) {
+    const { progress } = useProgress()
+    const hasReported = useRef(false)
+
+    useEffect(() => {
+        if (!hasReported.current && progress >= 100) {
+            hasReported.current = true
+            onLoaded?.()
+        }
+    }, [progress, onLoaded])
+
+    return null
+}
+
+export function Scene({
+    isInteracting,
+    modelColor,
+    revealProgress = 0,
+    onAssetsLoaded,
+}: {
+    isInteracting: boolean
+    modelColor: string
+    revealProgress?: number
+    onAssetsLoaded?: () => void
+}) {
     const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
-    
+    const opacity = Math.max(0, Math.min(1, 1 - Math.max(0, revealProgress - 0.68) * 6))
+
     return (
         <Canvas
             shadows
@@ -35,7 +50,8 @@ export function Scene({ isInteracting, modelColor }: { isInteracting: boolean, m
                 width: '100vw',
                 height: '100vh',
                 zIndex: 1,
-                
+                opacity,
+                transition: 'opacity 0.6s ease',
                 // ✅ KEY FIX: Always none on mobile, conditional on desktop
                 pointerEvents: isMobile ? 'none' : (isInteracting ? 'auto' : 'none'),
                 
@@ -44,6 +60,7 @@ export function Scene({ isInteracting, modelColor }: { isInteracting: boolean, m
             }}
         >
             <Suspense fallback={<Loader />}>
+                <ProgressReporter onLoaded={onAssetsLoaded} />
                 <Lights />
                 <Experience isInteracting={isInteracting} modelColor={modelColor} />
             </Suspense>

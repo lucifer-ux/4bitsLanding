@@ -41,11 +41,17 @@ export function Experience({ isInteracting, modelColor }: { isInteracting: boole
         const group = groupRef.current
         const material = mesh.material as THREE.MeshStandardMaterial
 
-        // Initial State (Hero)
-        camera.position.set(0, 0, 20) // Moved back more
+        // Initial State (Features pose)
+        camera.position.set(0, 0, 20)
         group.position.set(0, 0, 0)
-        mesh.rotation.set(0.5, -0.5, 0)
-        mesh.scale.set(0.08, 0.08, 0.08) // Further reduced (was 0.15)
+        // Orientation to match feature-section screenshot
+        const baseRotation = {
+            x: 0.05,
+            y: Math.PI * 1.55,
+            z: 0,
+        }
+        mesh.rotation.set(baseRotation.x, baseRotation.y, baseRotation.z)
+        mesh.scale.set(0, 0, 0)
 
         // Color definitions for animations
         const colorSpecs = new THREE.Color("#222222")
@@ -62,19 +68,23 @@ export function Experience({ isInteracting, modelColor }: { isInteracting: boole
                 scrollTrigger: {
                     trigger: document.body, // Pin to body/viewport
                     start: "top top",
+                    endTrigger: "footer",
                     end: "bottom bottom",
                     scrub: 1.5, // Smooth but responsive
                     immediateRender: false
                 }
             })
 
-            // 1. Hero -> Features (approx 0-25%)
-            tl.to(group.position, { x: 1, y: -0.2, z: 0, ease: "power1.inOut", duration: 2 })
-                .to(mesh.rotation, { x: 0.1, y: Math.PI * 0.5, z: 0, duration: 2 }, "<")
-
             // 2. Features -> Specs (approx 25-50%)
-            tl.to(group.position, { x: 0, y: 0.2, z: 2, ease: "power1.inOut", duration: 2 })
-                .to(mesh.rotation, { x: 0, y: Math.PI, z: 0, duration: 2 }, "<")
+            // Flip rotation for Powers section
+            tl.to(group.position, { x: 1, y: 0.2, z: -2, ease: "power1.inOut", duration: 2 })
+                // 360 rotation from Powers -> Philosophy
+                .to(mesh.rotation, {
+                    x: baseRotation.x,
+                    y: baseRotation.y + Math.PI * 2 + Math.PI,
+                    z: baseRotation.z,
+                    duration: 2
+                }, "<")
                 .to(mesh.scale, { x: 0.1, y: 0.1, z: 0.1, duration: 2 }, "<")
                 .to(material, { roughness: 0.1, metalness: 1, duration: 2 }, "<")
                 .to(material.emissive, { r: emissiveSpecs.r, g: emissiveSpecs.g, b: emissiveSpecs.b, duration: 2 }, "<")
@@ -82,19 +92,20 @@ export function Experience({ isInteracting, modelColor }: { isInteracting: boole
 
             // 3. Specs -> Philosophy (approx 50-75%)
             tl.to(group.position, { x: -1, y: 0.5, z: 0, ease: "power1.inOut", duration: 2 })
-                .to(mesh.rotation, { x: 0.2, y: Math.PI * 1.5, z: 0.1, duration: 2 }, "<")
+                // -360 rotation from Philosophy -> See it in action
+                .to(mesh.rotation, {
+                    x: baseRotation.x,
+                    y: baseRotation.y - Math.PI * 4,
+                    z: 0.1,
+                    duration: 2
+                }, "<")
                 .to(mesh.scale, { x: 0.08, y: 0.08, z: 0.08, duration: 2 }, "<")
                 .to(material, { roughness: 0.4, metalness: 0.8, duration: 2 }, "<")
                 .to(material.emissive, { r: emissivePhil.r, g: emissivePhil.g, b: emissivePhil.b, duration: 2 }, "<")
                 .to(material.color, { r: colorPhil.r, g: colorPhil.g, b: colorPhil.b, duration: 2 }, "<")
 
-            // 4. Philosophy -> CTA (approx 75-90%)
-            tl.to(group.position, { x: 0, y: 0, z: 0, ease: "power2.out", duration: 1.5 })
-                .to(mesh.rotation, { y: Math.PI * 3, duration: 1.5 }, "<")
-
-            // 5. CTA -> Playground (90-100%)
-            tl.to(group.position, { x: 1, y: -0.2, z: 0, ease: "power1.inOut", duration: 2 })
-                .to(mesh.rotation, { x: 0.1, y: Math.PI * 0.5, z: 0, duration: 2 }, "<")
+            // Philosophy -> Footer: zoom out and go away
+            tl.to(mesh.scale, { x: 0, y: 0, z: 0, duration: 1.5 }, ">")
 
 
            

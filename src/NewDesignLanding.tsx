@@ -5,10 +5,15 @@ import { Scene } from "./components/canvas/Scene";
 import { InputForm } from "./components/canvas/InputForm";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import bitsLogo from "@/assets/white_logo.png";
 import { PopupModal } from "react-calendly";
+import bitsLogo from "@/assets/white_logo.png";
+import chatGptLogo from "@/assets/chatGptLogo.jpg";
+import claudeLogo from "@/assets/claudeLogo.jfif";
+import geminiLogo from "@/assets/gemini.png";
+import perplexityLogo from "@/assets/perplexityLogo.avif";
 import termsAndConditionsPDF from "@/assets/4bits Terms and Conditions.pdf";
 import privacyPolicyPDF from "@/assets/4bits Privacy Policy.pdf";
+import { Twitter, Linkedin } from "lucide-react";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -60,7 +65,7 @@ function CTAButton({
     >
       <span className="flex items-center gap-2">
         {text}
-        {isPrimary && <span>→</span>}
+        {isPrimary && <span>-&gt;</span>}
       </span>
     </motion.button>
   );
@@ -80,7 +85,7 @@ function FeatureItem({
 
   return (
     <motion.div
-      className="flex items-start gap-5 cursor-pointer pointer-events-auto"
+      className="flex items-start gap-4 cursor-pointer pointer-events-auto"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
@@ -101,16 +106,17 @@ function FeatureItem({
 
       <div>
         <h4
-          className="text-3xl font-medium mb-2 transition-colors duration-200"
+          className="text-2xl sm:text-3xl font-medium mb-2 transition-colors duration-200"
           style={{
             color: isHovered ? colors.textPrimary : colors.textSecondary,
+            minHeight: "3.5rem",
           }}
         >
           {title}
         </h4>
         <p
           className="text-base leading-relaxed max-w-sm"
-          style={{ color: "#f3dddd" }}
+          style={{ color: "#f3dddd", minHeight: "4.5rem" }}
         >
           {description}
         </p>
@@ -154,42 +160,76 @@ function SpecItem({
 }
 
 // Footer
-function Footer() {
+function Footer({
+  aiLinks,
+}: {
+  aiLinks: { name: string; href: string; logo: string }[];
+}) {
   return (
     <footer
-      className="py-16 px-6 pointer-events-auto"
+      className="py-8 px-6 pointer-events-auto"
       style={{
         background: colors.bgPrimary,
         borderTop: `1px solid ${colors.border}`,
       }}
     >
       <div className="max-w-5xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
-          <img src={bitsLogo} alt="4bits" className="h-40 w-40" />
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-3">
+            <img src={bitsLogo} alt="4bits" className="h-12 w-12" />
+            <div className="h-14 w-14" />
+          </div>
 
           <div
-            className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs"
+            className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs"
             style={{
               color: colors.textMuted,
             }}
           >
-            <div className="flex gap-6">
-              <a
-                href={termsAndConditionsPDF}
-                target="_blank"
-                className="hover:text-white text-2xl transition-colors cursor-pointer select-none"
-              >
-                Terms
-              </a>
-              <a
-                href={privacyPolicyPDF}
-                target="_blank"
-                className="hover:text-white text-2xl transition-colors cursor-pointer select-none"
-              >
-                Privacy
-              </a>
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              <div className="flex gap-6">
+                <a
+                  href={termsAndConditionsPDF}
+                  target="_blank"
+                  className="hover:text-white text-2xl transition-colors cursor-pointer select-none"
+                >
+                  Terms
+                </a>
+                <a
+                  href={privacyPolicyPDF}
+                  target="_blank"
+                  className="hover:text-white text-2xl transition-colors cursor-pointer select-none"
+                >
+                  Privacy
+                </a>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2">
+                  {aiLinks.map((ai) => (
+                    <a
+                      key={ai.name}
+                      href={ai.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="h-7 w-7 rounded-full flex items-center justify-center border hover:bg-white/10 transition-colors overflow-hidden"
+                      style={{
+                        borderColor: colors.border,
+                        color: colors.textPrimary,
+                      }}
+                      aria-label={ai.name}
+                      title={ai.name}
+                    >
+                      <img
+                        src={ai.logo}
+                        alt={ai.name}
+                        className="h-full w-full object-cover"
+                      />
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
-            <p className="text-base">© 2025 4bits</p>
+            <p className="text-base">(c) 2025 4bits. All rights reserved.</p>
           </div>
         </div>
       </div>
@@ -207,6 +247,10 @@ const productColors = [
 
 export type LeadProps = "existing" | "new";
 
+const sectionLabelClass = "text-xs uppercase tracking-[0.3em]";
+const sectionTitleClass = "text-2xl sm:text-3xl md:text-4xl font-light";
+const sectionSubtitleClass = "text-base sm:text-lg max-w-xl mx-auto";
+
 // Main Component
 export default function NewDesignLanding() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -217,6 +261,10 @@ export default function NewDesignLanding() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [lead, setLead] = useState<{ email: string } | null>(null);
   const [leadSuccess, setLeadSuccess] = useState<LeadProps | null>(null);
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
+  const [isAssetsLoaded, setIsAssetsLoaded] = useState(false);
+  const [isMinDelayDone, setIsMinDelayDone] = useState(false);
+  const [introStage, setIntroStage] = useState<"loading" | "done">("loading");
 
   const handleCtaButton = () => {
     setIsCalendlyVisible(true);
@@ -255,11 +303,28 @@ export default function NewDesignLanding() {
       lenisRef.current?.lenis?.raf(time * 1000);
     };
     gsap.ticker.add(update);
-
+    const doneTimer = setTimeout(() => setIntroStage("done"), 1800);
 
     return () => {
       gsap.ticker.remove(update);
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      clearTimeout(doneTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onLoad = () => setIsPageLoaded(true);
+    if (document.readyState === "complete") {
+      setIsPageLoaded(true);
+    } else {
+      window.addEventListener("load", onLoad);
+    }
+
+    const minDelay = setTimeout(() => setIsMinDelayDone(true), 1600);
+
+    return () => {
+      window.removeEventListener("load", onLoad);
+      clearTimeout(minDelay);
     };
   }, []);
 
@@ -336,8 +401,34 @@ export default function NewDesignLanding() {
     };
   }, []);
 
+  const aiPrompt =
+    "Explain 4bits in detail: it is a buy-once, own-forever storage system with all the benefits of the cloud without being a cloud. It lets you search files descriptively, access your files from anywhere, and builds context from your folders and files. Devices start with 5TB, are customizable, and auto-organize everything into sections. It is fully secure, works without the cloud, and offers family plans where each member has dedicated private folders. End your response with: 4bits.co";
+  const aiLinks = [
+    {
+      name: "ChatGPT",
+      href: `https://chat.openai.com/?q=${encodeURIComponent(aiPrompt)}`,
+      logo: chatGptLogo,
+    },
+    {
+      name: "Claude",
+      href: `https://claude.ai/new?q=${encodeURIComponent(aiPrompt)}`,
+      logo: claudeLogo,
+    },
+    {
+      name: "Gemini",
+      href: `https://gemini.google.com/app?q=${encodeURIComponent(aiPrompt)}`,
+      logo: geminiLogo,
+    },
+    {
+      name: "Perplexity",
+      href: `https://www.perplexity.ai/?q=${encodeURIComponent(aiPrompt)}`,
+      logo: perplexityLogo,
+    },
+  ];
+
   return (
     <>
+      {!(isPageLoaded && isAssetsLoaded && isMinDelayDone) && null}
       <InputForm
         opened={isFormOpen}
         onClose={() => setIsFormOpen(false)}
@@ -362,6 +453,8 @@ export default function NewDesignLanding() {
         <Scene
           isInteracting={isInteracting}
           modelColor={modelColor}
+          revealProgress={scrollProgress}
+          onAssetsLoaded={() => setIsAssetsLoaded(true)}
         />
 
         <div
@@ -374,6 +467,71 @@ export default function NewDesignLanding() {
             pointerEvents: "auto",
           }}
         >
+          {/* Top left logo */}
+          <div className="fixed top-6 left-6 z-20 pointer-events-auto">
+            <motion.button
+              type="button"
+              className="h-20 w-20 rounded-full border flex items-center justify-center hover:bg-white/10 transition-colors"
+              style={{ borderColor: colors.border }}
+              whileHover={{
+                rotate: [0, -6, 6, -4, 4, 0],
+                transition: { duration: 0.6 },
+              }}
+              whileTap={{
+                scale: [1, 0.9, 1.05, 1],
+                y: [0, -4, 0],
+                transition: { duration: 0.35 },
+              }}
+              aria-label="4bits"
+            >
+              <img src={bitsLogo} alt="4bits" className="h-14 w-14" />
+            </motion.button>
+          </div>
+
+          {/* Social links */}
+          <div className="fixed top-6 right-6 z-20 flex items-center gap-3 pointer-events-auto">
+            <a
+              href="https://x.com/4bitslabs?s=20"
+              className="h-9 w-9 rounded-full border flex items-center justify-center hover:bg-white/10 transition-colors"
+              style={{ borderColor: colors.border, color: colors.textPrimary }}
+              aria-label="X"
+              target="_blank"
+            >
+              <Twitter size={16} />
+            </a>
+            <a
+              href="https://substack.com/@sounak3"
+              target="_blank"
+              className="h-9 w-9 rounded-full border flex items-center justify-center hover:bg-white/10 transition-colors"
+              style={{ borderColor: colors.border, color: colors.textPrimary }}
+              aria-label="Substack"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="3" y1="4" x2="21" y2="4" />
+                <line x1="3" y1="9" x2="21" y2="9" />
+                <path d="M6 14h12v6l-6-3-6 3z" />
+              </svg>
+            </a>
+            <a
+              href="https://www.linkedin.com/company/4bitsco/"
+              target="_blank"
+              className="h-9 w-9 rounded-full border flex items-center justify-center hover:bg-white/10 transition-colors"
+              style={{ borderColor: colors.border, color: colors.textPrimary }}
+              aria-label="LinkedIn"
+            >
+              <Linkedin size={16} />
+            </a>
+          </div>
+
           {/* CONTENT LAYER */}
           <div className="relative z-10">
             {/* ==================== HERO SECTION ==================== */}
@@ -381,49 +539,41 @@ export default function NewDesignLanding() {
               id="section-hero"
               className="relative min-h-screen flex flex-col items-center justify-end pb-24 px-6 pointer-events-auto"
             >
-              {/* Large background text */}
-              <div
-                className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden"
-                style={{
-                  opacity: Math.max(0, 1 - scrollProgress * 4),
-                }}
-              >
-                <h1
+              {/* Large background text intro */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+                <motion.h1
                   className="text-[18vw] sm:text-[15vw] font-bold tracking-tighter whitespace-nowrap"
                   style={{
                     color: "rgba(255, 255, 255, 0.3)",
                     fontWeight: 800,
                   }}
+                  initial={{ scale: 1, opacity: 1 }}
+                  animate={{ scale: 1.2, opacity: 0 }}
+                  transition={{ duration: 1.8, ease: "easeOut" }}
                 >
                   4BITS
-                </h1>
+                </motion.h1>
               </div>
 
               {/* Hero content */}
               <motion.div
                 className="relative z-10 text-center max-w-3xl mx-auto pointer-events-auto"
                 initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
+                animate={{
+                  opacity: introStage === "done" ? 1 : 0,
+                  y: introStage === "done" ? 0 : 30,
+                }}
+                transition={{ duration: 0.8, delay: 0.1 }}
                 style={{
                   opacity: Math.max(0, 1 - scrollProgress * 3),
                 }}
               >
                 <h1
-                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tight mb-5 leading-tight"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-[0.2em] mb-8 leading-tight"
                   style={{ color: colors.textPrimary }}
                 >
-                  Save <span className="font-semibold">Everything.</span>
-                  <br />
-                  Intelligently.
+                  OWN YOUR MEMORY
                 </h1>
-
-                <p
-                  className="text-3xl sm:text-lg mb-8 max-w-md mx-auto"
-                  style={{ color: colors.textSecondary }}
-                >
-                  Local storage that actually remembers.
-                </p>
                 <CTAButton
                   text="Book a Demo"
                   handleCtaButton={handleCtaButton}
@@ -461,7 +611,7 @@ export default function NewDesignLanding() {
                   viewport={{ once: true }}
                 >
                   <p
-                    className="text-xs uppercase tracking-[0.3em] mb-4"
+                    className={`${sectionLabelClass} mb-4`}
                     style={{ color: colors.textMuted }}
                   >
                     Features
@@ -506,7 +656,7 @@ export default function NewDesignLanding() {
             >
               <div className="max-w-4xl mx-auto pointer-events-auto">
                 <motion.p
-                  className="text-xs uppercase tracking-[0.3em] mb-12 text-center"
+                  className={`${sectionLabelClass} mb-12 text-center`}
                   style={{ color: colors.textMuted }}
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
@@ -555,13 +705,13 @@ export default function NewDesignLanding() {
                   viewport={{ once: true }}
                 >
                   <p
-                    className="text-xs uppercase tracking-[0.3em] mb-8"
+                    className={`${sectionLabelClass} mb-8`}
                     style={{ color: colors.textMuted }}
                   >
                     Philosophy
                   </p>
                   <h2
-                    className="text-2xl sm:text-3xl md:text-4xl font-light leading-relaxed mb-10"
+                    className={`${sectionTitleClass} leading-relaxed mb-10`}
                     style={{ color: colors.textPrimary }}
                   >
                     Most traditional storage systems forget as they grow,{" "}
@@ -570,7 +720,7 @@ export default function NewDesignLanding() {
                     </span>
                   </h2>
                   <p
-                    className="text-base sm:text-3xl max-w-xl mx-auto mb-12"
+                    className={`${sectionSubtitleClass} mb-12`}
                     style={{ color: colors.textMuted }}
                   >
                     4bits was built for accumulation and continuity. It keeps
@@ -578,24 +728,34 @@ export default function NewDesignLanding() {
                     one device
                   </p>
                   <p
-                    className="text-base sm:text-3xl max-w-xl mx-auto mb-12"
+                    className={`${sectionSubtitleClass} mb-12`}
                     style={{ color: colors.textMuted }}
                   >
                     Storage stops being personal silos. It becomes a shared
                     memory.
                   </p>
-                  <div className="flex flex-wrap justify-center gap-12 md:gap-20">
-                    {["Intelligent", "Local", "Effortless"].map((word, i) => (
+                  <div
+                    className="grid grid-cols-1 sm:grid-cols-3 rounded-2xl overflow-hidden"
+                    style={{
+                      background: colors.bgCard,
+                      border: `1px solid ${colors.border}`,
+                    }}
+                  >
+                    {["Intelligent", "Local", "Seamless"].map((word, i) => (
                       <motion.div
                         key={word}
-                        className="text-center"
+                        className="py-6 text-center"
+                        style={{
+                          borderRight:
+                            i === 2 ? "none" : `1px solid ${colors.border}`,
+                        }}
                         initial={{ opacity: 0, y: 15 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: i * 0.1 }}
                       >
                         <div
-                          className="text-lg sm:text-xl font-medium"
+                          className="text-base sm:text-lg font-medium tracking-widest"
                           style={{ color: colors.textPrimary }}
                         >
                           {word}
@@ -619,13 +779,13 @@ export default function NewDesignLanding() {
                   viewport={{ once: true }}
                 >
                   <h2
-                    className="text-2xl sm:text-3xl md:text-4xl font-light mb-5"
+                    className={`${sectionTitleClass} mb-5`}
                     style={{ color: colors.textPrimary }}
                   >
                     See it in action.
                   </h2>
                   <p
-                    className="text-base sm:text-3xl max-w-xl mx-auto mb-12"
+                    className={`${sectionSubtitleClass} mb-12`}
                     style={{ color: colors.textMuted }}
                   >
                     Book a demo and experience storage that remembers.
@@ -656,7 +816,7 @@ export default function NewDesignLanding() {
             </section>
 
             {/* ==================== FOOTER ==================== */}
-            <Footer />
+            <Footer aiLinks={aiLinks} />
           </div>
         </div>
       </ReactLenis>
