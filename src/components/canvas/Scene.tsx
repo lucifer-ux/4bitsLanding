@@ -1,7 +1,6 @@
 import { Canvas } from '@react-three/fiber'
 import { Suspense, useEffect, useRef } from 'react'
-import { Html, useProgress } from '@react-three/drei'
-import { motion } from 'framer-motion'
+import {  useProgress } from '@react-three/drei'
 import { Lights } from './Lights'
 import { Experience } from './Experience'
 
