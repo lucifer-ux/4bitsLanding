@@ -1,5 +1,5 @@
-import { useRef, useLayoutEffect } from 'react'
-import { useThree } from '@react-three/fiber'
+import { useRef, useLayoutEffect, useEffect } from 'react'
+import { useThree, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -11,8 +11,25 @@ gsap.registerPlugin(ScrollTrigger)
 export function Experience({ isInteracting, modelColor }: { isInteracting: boolean, modelColor: string }) {
     const meshRef = useRef<THREE.Group>(null)
     const groupRef = useRef<THREE.Group>(null)
+    const idleRef = useRef<THREE.Group>(null)
     const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
     const { camera, invalidate } = useThree()
+
+    // Subtle idle motion even when frameloop is "demand"
+    useFrame((state) => {
+        if (!idleRef.current) return
+        const t = state.clock.elapsedTime
+        idleRef.current.rotation.x = Math.sin(t * 0.7) * 0.06
+        idleRef.current.rotation.y = Math.cos(t * 0.6) * 0.08
+        idleRef.current.position.y = Math.sin(t * 0.9) * 0.06
+    })
+
+    useEffect(() => {
+        const interval = window.setInterval(() => {
+            invalidate()
+        }, 50) // ~20fps idle updates
+        return () => window.clearInterval(interval)
+    }, [invalidate])
 
     useLayoutEffect(() => {
         if (!meshRef.current || !groupRef.current) return
@@ -120,7 +137,9 @@ export function Experience({ isInteracting, modelColor }: { isInteracting: boole
               1. Group (controlled by ScrollTrigger)
               2. Model (Internal)
             */}
-            <Model ref={meshRef} modelColor={modelColor} />
+            <group ref={idleRef}>
+                <Model ref={meshRef} modelColor={modelColor} />
+            </group>
         </group>
     )
 }
