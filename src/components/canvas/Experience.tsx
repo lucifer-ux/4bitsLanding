@@ -1,6 +1,6 @@
 import { useRef, useLayoutEffect } from 'react'
-import { useThree, useFrame } from '@react-three/fiber'
-import { OrbitControls, Float } from '@react-three/drei'
+import { useThree } from '@react-three/fiber'
+import { OrbitControls } from '@react-three/drei'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import * as THREE from 'three'
@@ -9,37 +9,24 @@ import { Model } from './Model'
 gsap.registerPlugin(ScrollTrigger)
 
 export function Experience({ isInteracting, modelColor }: { isInteracting: boolean, modelColor: string }) {
-    const meshRef = useRef<THREE.Mesh>(null)
+    const meshRef = useRef<THREE.Group>(null)
     const groupRef = useRef<THREE.Group>(null)
-    const floatRef = useRef<THREE.Group>(null)
     const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
-    const { camera } = useThree()
-
-    // Mouse Parallax Logic
-    useFrame((state) => {
-        if (floatRef.current && !isInteracting) {
-            // Smoothly move the float group based on mouse position
-            // Dividing by 10/20 makes the movement subtle
-            const x = state.pointer.x * 0.5
-            const y = state.pointer.y * 0.5
-
-            // Lerp for smoothness (Inverted direction, mild intensity)
-            // Opposite direction means:
-            // Mouse moves right (+x) -> object rotates left (-y)
-            // Mouse moves up (+y) -> object rotates down (-x? no, +x tilts forward)
-            // Let's use standard inverted look-at
-            const intensity = 0.3
-            floatRef.current.rotation.x = THREE.MathUtils.lerp(floatRef.current.rotation.x, y * intensity, 0.05)
-            floatRef.current.rotation.y = THREE.MathUtils.lerp(floatRef.current.rotation.y, -x * intensity, 0.05)
-        }
-    })
+    const { camera, invalidate } = useThree()
 
     useLayoutEffect(() => {
         if (!meshRef.current || !groupRef.current) return
 
         const mesh = meshRef.current
         const group = groupRef.current
-        const material = mesh.material as THREE.MeshStandardMaterial
+        const targetMaterials: THREE.MeshStandardMaterial[] = []
+        mesh.traverse((child) => {
+            if (child instanceof THREE.Mesh && child.material && (child.material as THREE.MeshStandardMaterial).isMeshStandardMaterial) {
+                if (child.name === "disk") {
+                    targetMaterials.push(child.material as THREE.MeshStandardMaterial)
+                }
+            }
+        })
 
         // Initial State (Features pose)
         camera.position.set(0, 0, 20)
@@ -51,7 +38,8 @@ export function Experience({ isInteracting, modelColor }: { isInteracting: boole
             z: 0,
         }
         mesh.rotation.set(baseRotation.x, baseRotation.y, baseRotation.z)
-        mesh.scale.set(0, 0, 0)
+        // Start visible in the hero; scroll will refine scale later
+        mesh.scale.set(0.08, 0.08, 0.08)
 
         // Color definitions for animations
         const colorSpecs = new THREE.Color("#222222")
@@ -71,7 +59,8 @@ export function Experience({ isInteracting, modelColor }: { isInteracting: boole
                     endTrigger: "footer",
                     end: "bottom bottom",
                     scrub: 1.5, // Smooth but responsive
-                    immediateRender: false
+                    immediateRender: false,
+                    onUpdate: () => invalidate(),
                 }
             })
 
@@ -86,9 +75,9 @@ export function Experience({ isInteracting, modelColor }: { isInteracting: boole
                     duration: 2
                 }, "<")
                 .to(mesh.scale, { x: 0.1, y: 0.1, z: 0.1, duration: 2 }, "<")
-                .to(material, { roughness: 0.1, metalness: 1, duration: 2 }, "<")
-                .to(material.emissive, { r: emissiveSpecs.r, g: emissiveSpecs.g, b: emissiveSpecs.b, duration: 2 }, "<")
-                .to(material.color, { r: colorSpecs.r, g: colorSpecs.g, b: colorSpecs.b, duration: 2 }, "<")
+                .to(targetMaterials, { roughness: 0.1, metalness: 1, duration: 2 }, "<")
+                .to(targetMaterials.map((m) => m.emissive), { r: emissiveSpecs.r, g: emissiveSpecs.g, b: emissiveSpecs.b, duration: 2 }, "<")
+                .to(targetMaterials.map((m) => m.color), { r: colorSpecs.r, g: colorSpecs.g, b: colorSpecs.b, duration: 2 }, "<")
 
             // 3. Specs -> Philosophy (approx 50-75%)
             tl.to(group.position, { x: -1, y: 0.5, z: 0, ease: "power1.inOut", duration: 2 })
@@ -100,9 +89,9 @@ export function Experience({ isInteracting, modelColor }: { isInteracting: boole
                     duration: 2
                 }, "<")
                 .to(mesh.scale, { x: 0.08, y: 0.08, z: 0.08, duration: 2 }, "<")
-                .to(material, { roughness: 0.4, metalness: 0.8, duration: 2 }, "<")
-                .to(material.emissive, { r: emissivePhil.r, g: emissivePhil.g, b: emissivePhil.b, duration: 2 }, "<")
-                .to(material.color, { r: colorPhil.r, g: colorPhil.g, b: colorPhil.b, duration: 2 }, "<")
+                .to(targetMaterials, { roughness: 0.4, metalness: 0.8, duration: 2 }, "<")
+                .to(targetMaterials.map((m) => m.emissive), { r: emissivePhil.r, g: emissivePhil.g, b: emissivePhil.b, duration: 2 }, "<")
+                .to(targetMaterials.map((m) => m.color), { r: colorPhil.r, g: colorPhil.g, b: colorPhil.b, duration: 2 }, "<")
 
             // Philosophy -> Footer: zoom out and go away
             tl.to(mesh.scale, { x: 0, y: 0, z: 0, duration: 1.5 }, ">")
@@ -129,19 +118,9 @@ export function Experience({ isInteracting, modelColor }: { isInteracting: boole
             {/*
               Layering Strategy:
               1. Group (controlled by ScrollTrigger)
-              2. Float (controlled by Drei + Mouse Parallax)
-              3. Model (Internal)
+              2. Model (Internal)
             */}
-            <group ref={floatRef}>
-                <Float
-                    speed={2} // Animation speed
-                    rotationIntensity={0.5} // XYZ rotation intensity
-                    floatIntensity={0.5} // Up/down float intensity
-                    floatingRange={[-0.1, 0.1]} // Range of y-axis values the object will float within
-                >
-                    <Model ref={meshRef} modelColor={modelColor} />
-                </Float>
-            </group>
+            <Model ref={meshRef} modelColor={modelColor} />
         </group>
     )
 }

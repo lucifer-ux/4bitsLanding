@@ -1,0 +1,23 @@
+4bits - LLM Summary
+
+Summary
+4bits is a buy-once, own-forever personal storage device designed to give you cloud-like access without actually being the cloud. Your data lives on a single device you own, while still being accessible from anywhere.
+
+Who it's for
+4bits is built for individuals and families who want the convenience of modern cloud storage without subscriptions, vendor lock-in, or handing control of their data to third parties. It's especially suited to people who value privacy, long-term ownership, and an organized digital life.
+
+Key capabilities
+- Cloud-like access, not the cloud: Reach your files from anywhere while keeping everything on your own device.
+- Descriptive search: Find files by describing what you’re looking for, not just by filename.
+- Context preservation: Files retain their meaning and relationships across folders and sections.
+- Auto-organization: Content is automatically organized into clear sections to reduce manual sorting.
+- Large, flexible storage: Devices start at 5TB and can be customized.
+- Strong security model: Data remains fully secure on a single device you control.
+- Family support: Dedicated private folders for each family member, all on one shared device.
+
+Official links
+https://4bits.co
+https://x.com/4bitslabs
+https://www.linkedin.com/company/4bitsco/
+
+4bits.co

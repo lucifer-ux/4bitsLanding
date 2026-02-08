@@ -38,9 +38,10 @@ export function Scene({
 
     return (
         <Canvas
-            shadows
-            dpr={[1, 1.5]}
-            gl={{ antialias: true, alpha: true }}
+            shadows={false}
+            dpr={[1, 1.25]}
+            frameloop={isInteracting ? 'always' : 'demand'}
+            gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
             camera={{ position: [0, 0, 3], fov: 50 }}
             style={{
                 position: 'fixed',

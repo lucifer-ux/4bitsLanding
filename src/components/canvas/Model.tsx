@@ -1,35 +1,47 @@
 import { useLoader, ThreeElements } from '@react-three/fiber'
 import { STLLoader } from 'three-stdlib'
-import { forwardRef, useLayoutEffect } from 'react'
+import { forwardRef, useLayoutEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { Center } from '@react-three/drei'
-import modelUrl from "@/assets/reduced.stl"
+import diskUrl from "@/assets/reduced.stl"
 
 // Custom type combining Mesh props and custom color prop
-type ModelProps = ThreeElements['mesh'] & {
+type ModelProps = ThreeElements['group'] & {
     modelColor?: string
 }
 
-export const Model = forwardRef<THREE.Mesh, ModelProps>(({ modelColor = "#1a1a1a", ...props }, ref) => {
-    // Cast the loader result to BufferGeometry because TS might infer it loosely
-    const geometry = useLoader(STLLoader, modelUrl) as THREE.BufferGeometry
+export const Model = forwardRef<THREE.Group, ModelProps>(({ modelColor = "#1a1a1a", ...props }, ref) => {
+    // Load asset
+    const diskGeometry = useLoader(STLLoader, diskUrl) as THREE.BufferGeometry
+
+    const diskMaterial = useMemo(() => {
+        return new THREE.MeshStandardMaterial({
+            color: new THREE.Color(modelColor),
+            roughness: 0.4,
+            metalness: 0.8,
+            envMapIntensity: 1,
+        })
+    }, [modelColor])
 
     useLayoutEffect(() => {
-        if (geometry) {
-            geometry.computeVertexNormals()
+        if (diskGeometry) {
+            diskGeometry.computeVertexNormals()
         }
-    }, [geometry])
+    }, [diskGeometry])
 
     return (
-        <Center>
-            <mesh ref={ref} geometry={geometry} scale={0.01} position={[0, 0, 0]} castShadow receiveShadow {...props}>
-                <meshStandardMaterial
-                    color={modelColor}
-                    roughness={0.4}
-                    metalness={0.8}
-                    envMapIntensity={1}
+        <group ref={ref} {...props}>
+            <Center>
+                <mesh
+                    name="disk"
+                    geometry={diskGeometry}
+                    scale={0.9}
+                    rotation={[Math.PI * 0.1, Math.PI * 0.2, 0]}
+                    castShadow
+                    receiveShadow
+                    material={diskMaterial}
                 />
-            </mesh>
-        </Center>
+            </Center>
+        </group>
     )
 })
