@@ -9,7 +9,7 @@ import { PopupModal } from "react-calendly";
 import bitsLogo from "@/assets/white_logo.png";
 import chatGptLogo from "@/assets/chatGptLogo.jpg";
 import claudeLogo from "@/assets/claudeLogo.jfif";
-import geminiLogo from "@/assets/gemini.png";
+import grokLogo from "@/assets/grokLogo.png";
 import perplexityLogo from "@/assets/perplexityLogo.avif";
 import termsAndConditionsPDF from "@/assets/4bits Terms and Conditions.pdf";
 import privacyPolicyPDF from "@/assets/4bits Privacy Policy.pdf";
@@ -390,9 +390,9 @@ export default function NewDesignLanding() {
       logo: claudeLogo,
     },
     {
-      name: "Gemini",
-      href: "https://gemini.google.com/app",
-      logo: geminiLogo,
+      name: "Grok",
+      href: `https://grok.com/?q=${encodeURIComponent(aiPrompt)}`,
+      logo: grokLogo,
     },
     {
       name: "Perplexity",
@@ -400,22 +400,6 @@ export default function NewDesignLanding() {
       logo: perplexityLogo,
     },
   ];
-
-  const handleCopyAiPrompt = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(aiPrompt);
-    } catch {
-      // Fallback for older browsers
-      const textarea = document.createElement("textarea");
-      textarea.value = aiPrompt;
-      textarea.style.position = "fixed";
-      textarea.style.left = "-9999px";
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textarea);
-    }
-  }, [aiPrompt]);
 
   return (
     <>
@@ -865,31 +849,18 @@ export default function NewDesignLanding() {
                           className="h-full w-full object-cover rounded-full"
                           style={{
                             opacity: 0.95,
+                            height: "133%",
                           }}
                         />
                       </a>
                     ))}
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleCopyAiPrompt}
-                    className="text-xs uppercase tracking-[0.35em] px-4 py-2 rounded-full border transition-colors"
-                    style={{
-                      borderColor: "rgba(255,255,255,0.2)",
-                      color: "rgba(255,255,255,0.7)",
-                      background: "rgba(255,255,255,0.05)",
-                    }}
-                  >
-                    Copy Prompt
-                  </button>
-
                   <div
                     className="text-sm"
                     style={{ color: "rgba(255,255,255,0.4)" }}
                   >
-                    Powered by the models you already use. Gemini doesn’t
-                    support prefill links — use Copy Prompt.
+                    Powered by the models you already use.
                   </div>
                 </motion.div>
               </div>
