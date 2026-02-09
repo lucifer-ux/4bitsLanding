@@ -185,7 +185,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  cursor: none; /* hide native cursor */
+  cursor: auto; /* keep native cursor visible */
 }
 
 /* Persistent starry background across the page */
@@ -254,8 +254,8 @@ body {
   overscroll-behavior-y: none;
 }
 
-/* Hide text caret globally so only our custom cursor is visible */
-* { caret-color: transparent; }
+/* Show text caret */
+* { caret-color: auto; }
 
 /* Ensure Ubuntu font is applied to all text elements */
 h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select, label, li, td, th {
