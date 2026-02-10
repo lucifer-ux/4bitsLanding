@@ -563,7 +563,7 @@ export default function NewDesignLanding() {
                 )}
                 <span style={{ marginLeft: "20px" }}>
                   <CTAButton
-                    text="Pre-Order Now"
+                    text="Join Waitlist"
                     handleCtaButton={handleFormOpening}
                     variant="secondary"
                   />
@@ -780,7 +780,7 @@ export default function NewDesignLanding() {
                     )}
                     <span style={{ marginLeft: "20px" }}>
                       <CTAButton
-                        text="Pre-Order Now"
+                        text="Join Waitlist"
                         handleCtaButton={handleFormOpening}
                         variant="secondary"
                       />
