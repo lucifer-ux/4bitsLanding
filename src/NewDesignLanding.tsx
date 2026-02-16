@@ -221,6 +221,11 @@ const productColors = [
 ];
 
 export type LeadProps = "existing" | "new";
+export type LeadResult = {
+  status: LeadProps;
+  number: number;
+  count: number;
+};
 
 const sectionLabelClass = "text-xs uppercase tracking-[0.3em]";
 const sectionTitleClass = "text-2xl sm:text-3xl md:text-4xl font-light";
@@ -235,7 +240,7 @@ export default function NewDesignLanding() {
   const lenisRef = useRef<any>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [lead, setLead] = useState<{ email: string } | null>(null);
-  const [leadSuccess, setLeadSuccess] = useState<LeadProps | null>(null);
+  const [leadResult, setLeadResult] = useState<LeadResult | null>(null);
   const [isPageLoaded, setIsPageLoaded] = useState(false);
   const [isAssetsLoaded, setIsAssetsLoaded] = useState(false);
   const [isMinDelayDone, setIsMinDelayDone] = useState(false);
@@ -251,6 +256,7 @@ export default function NewDesignLanding() {
 
   const handleFormSubmit = async (values: { email: string }) => {
     try {
+      setLeadResult(null);
       const resp = await fetch(
         "https://pengu1n-bot.peng1n.workers.dev/api/leads",
         {
@@ -261,9 +267,21 @@ export default function NewDesignLanding() {
           body: JSON.stringify(values),
         },
       );
+      const data = await resp.json();
       console.log(resp, "responsee");
-      if (resp.status === 200) setLeadSuccess("new");
-      else if (resp.status === 401) setLeadSuccess("existing");
+      if (resp.status === 200 && typeof data?.number === "number") {
+        setLeadResult({
+          status: "new",
+          number: data.number,
+          count: typeof data?.count === "number" ? data.count : data.number,
+        });
+      } else if (resp.status === 401 && typeof data?.number === "number") {
+        setLeadResult({
+          status: "existing",
+          number: data.number,
+          count: typeof data?.count === "number" ? data.count : data.number,
+        });
+      }
 
       setLead(values);
       console.log("Lead submitted:", lead);
@@ -408,7 +426,7 @@ export default function NewDesignLanding() {
         opened={isFormOpen}
         onClose={() => setIsFormOpen(false)}
         onSubmit={handleFormSubmit}
-        messageToDisplay={leadSuccess}
+        messageToDisplay={leadResult}
       />
       <ReactLenis
         ref={lenisRef}

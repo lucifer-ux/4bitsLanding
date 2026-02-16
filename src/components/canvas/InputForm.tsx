@@ -2,13 +2,13 @@ import { Modal, TextInput, Button } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import React from 'react';
 import '../InputForm.css';
-import { LeadProps } from '@/NewDesignLanding';
+import { LeadResult } from '@/NewDesignLanding';
 
 type InputFormProps = {
   opened: boolean;
   onClose: () => void;
   onSubmit: (values: { email: string }) => void;
-  messageToDisplay: LeadProps | null;
+  messageToDisplay: LeadResult | null;
 };
 
 export const InputForm: React.FC<InputFormProps> = ({
@@ -21,9 +21,10 @@ export const InputForm: React.FC<InputFormProps> = ({
     initialValues: { email: '' },
   });
 
-  const isError = messageToDisplay === 'existing';
-  const isSuccess = messageToDisplay === 'new';
+  const isError = messageToDisplay?.status === 'existing';
+  const isSuccess = messageToDisplay?.status === 'new';
   const showMessage = isError || isSuccess;
+  const waitlistNumber = messageToDisplay?.number;
 
   return (
     <Modal
@@ -92,8 +93,8 @@ export const InputForm: React.FC<InputFormProps> = ({
             />
             {showMessage && (
               <div className={`lead-message ${isError ? 'lead-message-error' : 'lead-message-success'}`}>
-                {isError && 'Already registered'}
-                {isSuccess && 'Registered for pre-order'}
+                {isError && `You are already signed up. Your waitlist position is #${waitlistNumber}.`}
+                {isSuccess && `Registered for pre-order. Your waitlist position is #${waitlistNumber}.`}
               </div>
             )}
           </div>
