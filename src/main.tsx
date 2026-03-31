@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import NewDesignLanding from './NewDesignLanding.tsx'
 import Dashboard from './Dashboard.tsx'
 import OpenApp from './OpenApp.tsx'
+import Documentation from './Documentation.tsx'
 import { MantineProvider } from '@mantine/core';
 import './index.css'
 
@@ -24,6 +25,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/openApp" element={
           <MantineProvider>
             <OpenApp />
+          </MantineProvider>
+        } />
+        <Route path="/documentation" element={
+          <MantineProvider>
+            <Documentation />
           </MantineProvider>
         } />
       </Routes>
